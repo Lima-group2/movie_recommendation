@@ -68,7 +68,7 @@ def load_data():
 
 # --- Sidebar ---
 with st.sidebar:
-    st.image("images/logo.PNG", use_container_width=True)
+    st.image("images/logo.png", use_container_width=True)
     st.title("🎥 Recommender")
     st.markdown("Created by: *LIMA-2 ML & AI*")
     st.markdown("---")
