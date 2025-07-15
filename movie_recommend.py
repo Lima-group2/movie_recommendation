@@ -46,9 +46,6 @@ def load_data():
 
     return movies, similarity
 
-# 3️⃣ Now your app can safely call:
-movies, similarity = load_data()
-
 
 # --- Sidebar ---
 with st.sidebar:
