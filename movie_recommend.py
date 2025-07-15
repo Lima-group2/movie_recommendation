@@ -15,8 +15,8 @@ import requests
 def load_data():
 
 # Helper function to download from Google Drive
-def download_from_drive(file_id, destination):
-    print(f"Downloading to {destination}...")
+    def download_from_drive(file_id, destination):
+        print(f"Downloading to {destination}...")
     url = f"https://drive.google.com/uc?export=download&id={file_id}"
     response = requests.get(url)
     if response.status_code == 200:
