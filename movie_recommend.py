@@ -14,7 +14,8 @@ import requests
 @st.cache_resource
 def load_data():
 
-# Helper function to download from Google Drive
+
+# 1️⃣ Define the helper function first
     def download_from_drive(file_id, destination):
         print(f"Downloading to {destination}...")
     url = f"https://drive.google.com/uc?export=download&id={file_id}"
@@ -26,31 +27,28 @@ def load_data():
     else:
         print(f"Failed to download {destination}. Status Code: {response.status_code}")
 
-# Function to load data
+# 2️⃣ Then define load_data() afterwards
 def load_data():
     os.makedirs('artifacts', exist_ok=True)
 
-    # File details
     files = {
         'movie_list.pkl': '1hLZkkyIG3AbydS7sVXj_zTs5JorULjNJ',
         'similarity.pkl': '1jc_C9ocFfnnwECaJ9L3gHEGbSIPr7d8x'
     }
 
-    # Download if missing
     for filename, file_id in files.items():
         filepath = os.path.join('artifacts', filename)
         if not os.path.exists(filepath):
             download_from_drive(file_id, filepath)
 
-    # Load files
     movies = pickle.load(open(os.path.join('artifacts', 'movie_list.pkl'), 'rb'))
     similarity = pickle.load(open(os.path.join('artifacts', 'similarity.pkl'), 'rb'))
 
     return movies, similarity
 
-
-
+# 3️⃣ Now your app can safely call:
 movies, similarity = load_data()
+
 
 # --- Sidebar ---
 with st.sidebar:
