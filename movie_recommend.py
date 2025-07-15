@@ -68,7 +68,7 @@ def recommend(movie):
 st.title("🎬 Movie Recommender System")
 st.markdown("Select a movie and discover similar recommendations powered by NLP and cosine similarity.")
 
-selected_movie = st.selectbox("🎞️ Choose a movie:", movies['title'].values)
+selected_movies = st.selectbox("🎞️ Choose a movie:", movies['title'].values)
 
 if st.button("🚀 Recommend"):
     recommendations = recommend(selected_movie)
