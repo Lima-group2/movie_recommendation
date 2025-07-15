@@ -6,13 +6,23 @@ st.set_page_config(page_title="🎬 Movie Recommender", layout="wide")
 import pickle
 import pandas as pd
 import os
+import gdown
+import joblib
+
 
 # ---------------- Load Pickled Data ----------------
 @st.cache_resource
 def load_data():
     movies = pickle.load(open("artifacts/movie_list.pkl", "rb"))
     similarity = pickle.load(open("artifacts/similarity.pkl", "rb"))
+    movie_file_id = "1hLZkkyIG3AbydS7sVXj_zTs5JorULjNJ"
+    similarity_file_id = "1jc_C9ocFfnnwECaJ9L3gHEGbSIPr7d8x"
+    movie_url = f"https://drive.google.com/uc?id={movie_file_id}"
+    similarity_url = f"https://drive.google.com/uc?id={similarity_file_id}"
+    
+
     return movies, similarity
+
 
 movies, similarity = load_data()
 
