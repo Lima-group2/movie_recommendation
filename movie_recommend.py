@@ -8,20 +8,46 @@ import pandas as pd
 import os
 import gdown
 import joblib
-
+import requests
 
 # ---------------- Load Pickled Data ----------------
 @st.cache_resource
 def load_data():
-    movies = pickle.load(open("artifacts/movie_list.pkl", "rb"))
-    similarity = pickle.load(open("artifacts/similarity.pkl", "rb"))
-    movie_file_id = "1hLZkkyIG3AbydS7sVXj_zTs5JorULjNJ"
-    similarity_file_id = "1jc_C9ocFfnnwECaJ9L3gHEGbSIPr7d8x"
-    movie_url = f"https://drive.google.com/uc?id={movie_file_id}"
-    similarity_url = f"https://drive.google.com/uc?id={similarity_file_id}"
-    
+
+# Helper function to download from Google Drive
+def download_from_drive(file_id, destination):
+    print(f"Downloading to {destination}...")
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(destination, 'wb') as f:
+            f.write(response.content)
+        print(f"Downloaded {destination}")
+    else:
+        print(f"Failed to download {destination}. Status Code: {response.status_code}")
+
+# Function to load data
+def load_data():
+    os.makedirs('artifacts', exist_ok=True)
+
+    # File details
+    files = {
+        'movie_list.pkl': '1hLZkkyIG3AbydS7sVXj_zTs5JorULjNJ',
+        'similarity.pkl': '1jc_C9ocFfnnwECaJ9L3gHEGbSIPr7d8x'
+    }
+
+    # Download if missing
+    for filename, file_id in files.items():
+        filepath = os.path.join('artifacts', filename)
+        if not os.path.exists(filepath):
+            download_from_drive(file_id, filepath)
+
+    # Load files
+    movies = pickle.load(open(os.path.join('artifacts', 'movie_list.pkl'), 'rb'))
+    similarity = pickle.load(open(os.path.join('artifacts', 'similarity.pkl'), 'rb'))
 
     return movies, similarity
+
 
 
 movies, similarity = load_data()
