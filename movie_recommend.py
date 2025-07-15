@@ -6,43 +6,62 @@ st.set_page_config(page_title="🎬 Movie Recommender", layout="wide")
 import pickle
 import pandas as pd
 import os
-import gdown
-import joblib
-import requests
 
 # ---------------- Load Pickled Data ----------------
-@st.cache_resource
+import streamlit as st
+
+import pickle
+import joblib
+import gdown
+import os
+
+import os
+import joblib
+import gdown
+import streamlit as st
+
+@st.cache_data
 def load_data():
+    os.makedirs("artifacts", exist_ok=True)
 
+    movie_file = "artifacts/movie_list_compressed.joblib"
+    similarity_file = "artifacts/similarity_compressed.joblib"
 
-# 1️⃣ Define the helper function first
-    def download_from_drive(file_id, destination):
-        print(f"Downloading to {destination}...")
-    url = f"https://drive.google.com/uc?export=download&id={file_id}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(destination, 'wb') as f:
-            f.write(response.content)
-        print(f"Downloaded {destination}")
-    else:
-        print(f"Failed to download {destination}. Status Code: {response.status_code}")
+    movie_file_id = "1p_Y0LjDV8stiUaNsDZvzECJ6rydgt4yR"
+    similarity_file_id = "1r0wkZNpof7LB_7H7cI792dDG-nGrkC_A"
 
-# 2️⃣ Then define load_data() afterwards
-def load_data():
-    os.makedirs('artifacts', exist_ok=True)
+    movie_url = f"https://drive.google.com/uc?id={movie_file_id}"
+    similarity_url = f"https://drive.google.com/uc?id={similarity_file_id}"
 
-    files = {
-        'movie_list.pkl': '1hLZkkyIG3AbydS7sVXj_zTs5JorULjNJ',
-        'similarity.pkl': '1jc_C9ocFfnnwECaJ9L3gHEGbSIPr7d8x'
-    }
+    with st.spinner("📥 Downloading movie file..."):
+        if not os.path.exists(movie_file):
+            result = gdown.download(movie_url, movie_file, quiet=False, fuzzy=True)
+            if result is None or not os.path.exists(movie_file):
+                st.error("❌ Failed to download movie file.")
+                st.stop()
+        else:
+            st.success("✅ Movie file ready.")
 
-    for filename, file_id in files.items():
-        filepath = os.path.join('artifacts', filename)
-        if not os.path.exists(filepath):
-            download_from_drive(file_id, filepath)
+    with st.spinner("📥 Downloading similarity file..."):
+        if not os.path.exists(similarity_file):
+            result = gdown.download(similarity_url, similarity_file, quiet=False, fuzzy=True)
+            if result is None or not os.path.exists(similarity_file):
+                st.error("❌ Failed to download similarity file.")
+                st.stop()
+        else:
+            st.success("✅ Similarity file ready.")
 
-    movies = pickle.load(open(os.path.join('artifacts', 'movie_list.pkl'), 'rb'))
-    similarity = pickle.load(open(os.path.join('artifacts', 'similarity.pkl'), 'rb'))
+    try:
+        movies = joblib.load(movie_file)
+    except Exception as e:
+        st.error(f"❌ Could not load movie file: {e}")
+        st.stop()
+
+    try:
+        similarity = joblib.load(similarity_file)
+    except Exception as e:
+        st.error(f"❌ Could not load similarity file: {e}")
+        st.stop()
 
     return movies, similarity
 
@@ -67,7 +86,7 @@ def recommend(movie):
 # ---------------- Main App UI ----------------
 st.title("🎬 Movie Recommender System")
 st.markdown("Select a movie and discover similar recommendations powered by NLP and cosine similarity.")
-
+movies, similarity = load_data()
 selected_movie = st.selectbox("🎞️ Choose a movie:", movies['title'].values)
 
 if st.button("🚀 Recommend"):
